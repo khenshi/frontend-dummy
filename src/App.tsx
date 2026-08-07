@@ -1,0 +1,7 @@
+import { Link, Navigate, Route, Routes } from 'react-router-dom'
+import PropertyListPage from './pages/PropertyListPage'
+import PropertyDetailsPage from './pages/PropertyDetailsPage'
+import CreatePropertyPage from './pages/CreatePropertyPage'
+import EditPropertyPage from './pages/EditPropertyPage'
+
+export default function App() { return <div className="min-h-screen bg-slate-50 text-slate-900"><header className="border-b border-slate-200 bg-white"><div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8"><Link to="/properties" className="flex items-center gap-3"><span className="grid size-9 place-items-center rounded-lg bg-teal-800 text-lg font-semibold text-white">P</span><span className="font-semibold tracking-tight">Property Desk</span></Link><nav aria-label="Main navigation"><Link to="/properties" className="text-sm font-medium text-slate-600 hover:text-teal-700">Properties</Link></nav></div></header><main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8"><Routes><Route path="/" element={<Navigate to="/properties" replace/>}/><Route path="/properties" element={<PropertyListPage/>}/><Route path="/properties/new" element={<CreatePropertyPage/>}/><Route path="/properties/:id" element={<PropertyDetailsPage/>}/><Route path="/properties/:id/edit" element={<EditPropertyPage/>}/><Route path="*" element={<Navigate to="/properties" replace/>}/></Routes></main></div> }
