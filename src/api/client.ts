@@ -9,7 +9,12 @@ export const apiClient = axios.create({
 
 export function getApiError(error: unknown): string {
   if (axios.isAxiosError(error)) {
-    return error.response?.data?.error?.message || (error.code === 'ERR_NETWORK' ? 'Unable to reach the server. Check that the API is running.' : error.message)
+    return (
+      error.response?.data?.error?.message ||
+      (error.code === 'ERR_NETWORK'
+        ? 'Unable to reach the server. Check that the API is running.'
+        : error.message)
+    )
   }
   return 'Something went wrong. Please try again.'
 }

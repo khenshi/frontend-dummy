@@ -1,3 +1,7 @@
+export const propertyTypes = ['HOUSE', 'APARTMENT', 'CONDO', 'TOWNHOUSE', 'COMMERCIAL'] as const
+
+export type PropertyType = (typeof propertyTypes)[number]
+
 export interface Property {
   id: string
   title: string
@@ -9,6 +13,7 @@ export interface Property {
   longitude: number
   price: number
   numberOfRooms: number
+  propertyType: PropertyType
   createdAt: string
   updatedAt: string
   imageUrl: string | null
@@ -24,5 +29,6 @@ export interface PropertyFormValues {
   longitude: string
   price: string
   numberOfRooms: string
+  propertyType: PropertyType
   image: File | null
 }

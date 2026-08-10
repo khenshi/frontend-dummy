@@ -6,16 +6,174 @@ import DeletePropertyDialog from '../components/properties/DeletePropertyDialog'
 import type { Property } from '../types/property'
 
 const money = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' })
+const propertyTypeLabel = (type: Property['propertyType']) => type.charAt(0) + type.slice(1).toLowerCase()
+
 export default function PropertyDetailsPage() {
-  const { id = '' } = useParams(); const navigate = useNavigate()
-  const [property, setProperty] = useState<Property | null>(null); const [loading, setLoading] = useState(true); const [error, setError] = useState(''); const [dialog, setDialog] = useState(false); const [deleting, setDeleting] = useState(false)
-  useEffect(() => { let active = true; setLoading(true); getProperty(id).then((data) => active && setProperty(data)).catch((err) => active && setError(getApiError(err))).finally(() => active && setLoading(false)); return () => { active = false } }, [id])
-  const remove = async () => { setDeleting(true); try { await deleteProperty(id); navigate('/properties', { replace: true }) } catch (err) { setError(getApiError(err)); setDialog(false); setDeleting(false) } }
-  if (loading) return <div className="rounded-2xl border border-slate-200 bg-white p-8"><div className="h-8 w-1/2 animate-pulse rounded bg-slate-200"/><div className="mt-8 aspect-[16/7] animate-pulse rounded-xl bg-slate-100"/></div>
-  if (error || !property) return <div className="rounded-2xl border border-red-200 bg-white p-10 text-center"><h1 className="text-xl font-semibold text-slate-900">Property unavailable</h1><p className="mt-2 text-sm text-slate-500">{error || 'This property could not be found.'}</p><Link className="btn-secondary mt-6" to="/properties">Back to properties</Link></div>
+
+  const { id = '' } = useParams()
+  const navigate = useNavigate()
+  const [property, setProperty] = useState<Property | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [dialog, setDialog] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+
+  useEffect(() => {
+    let active = true
+    setLoading(true)
+    getProperty(id)
+      .then((data) => active && setProperty(data))
+      .catch((err) => active && setError(getApiError(err)))
+      .finally(() => active && setLoading(false))
+    return () => {
+      active = false
+    }
+  }, [id])
+
+  const remove = async () => {
+    setDeleting(true)
+    try {
+      await deleteProperty(id)
+      navigate('/properties', { replace: true })
+    } catch (err) {
+      setError(getApiError(err))
+      setDialog(false)
+      setDeleting(false)
+    }
+  }
+
+  if (loading)
+    return (
+      <div className="rounded-2xl border border-slate-200 bg-white p-8">
+        <div className="h-8 w-1/2 animate-pulse rounded bg-slate-200" />
+        <div className="mt-8 aspect-[16/7] animate-pulse rounded-xl bg-slate-100" />
+      </div>
+    )
+
+  if (error || !property)
+    return (
+      <div className="rounded-2xl border border-red-200 bg-white p-10 text-center">
+        <h1 className="text-xl font-semibold text-slate-900">Property unavailable</h1>
+        <p className="mt-2 text-sm text-slate-500">
+          {error || 'This property could not be found.'}
+        </p>
+        <Link className="btn-secondary mt-6" to="/properties">
+          Back to properties
+        </Link>
+      </div>
+    )
+
   const image = getImageUrl(property.imageUrl)
-  return <div><Link to="/properties" className="back-link">← Back to properties</Link><div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between"><div><div className="flex flex-wrap items-center gap-3"><h1 className="page-title">{property.title}</h1><span className={property.isAvailable ? 'badge-available' : 'badge-unavailable'}>{property.isAvailable ? 'Available' : 'Unavailable'}</span></div><p className="mt-2 text-2xl font-semibold text-teal-800">{money.format(property.price)}</p></div><div className="flex gap-2"><Link to={`/properties/${id}/edit`} className="btn-secondary">Edit</Link><button className="btn-danger" onClick={() => setDialog(true)}>Delete</button></div></div>
-    <div className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white">{image ? <img src={image} alt={property.title} className="aspect-[16/7] w-full object-cover"/> : <div className="grid aspect-[16/7] place-items-center bg-slate-100 text-slate-400">No image available</div>}<div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[1fr_320px]"><div><h2 className="form-section-title">About this property</h2><p className="mt-3 whitespace-pre-wrap leading-7 text-slate-600">{property.description}</p></div><dl className="grid grid-cols-2 gap-x-4 gap-y-5 rounded-xl bg-slate-50 p-5 text-sm"><div><dt className="text-slate-500">Rooms</dt><dd className="mt-1 font-semibold text-slate-900">{property.numberOfRooms}</dd></div><div><dt className="text-slate-500">Available</dt><dd className="mt-1 font-semibold text-slate-900">{new Date(property.availableDate).toLocaleDateString()}</dd></div><div className="col-span-2"><dt className="text-slate-500">Inspection</dt><dd className="mt-1 font-semibold text-slate-900">{property.inspectionAt ? new Date(property.inspectionAt).toLocaleString() : 'Not scheduled'}</dd></div><div><dt className="text-slate-500">Latitude</dt><dd className="mt-1 font-semibold text-slate-900">{property.latitude}</dd></div><div><dt className="text-slate-500">Longitude</dt><dd className="mt-1 font-semibold text-slate-900">{property.longitude}</dd></div></dl></div></div>
-    {dialog && <DeletePropertyDialog title={property.title} isDeleting={deleting} onCancel={() => setDialog(false)} onConfirm={() => void remove()} />}
-  </div>
+
+  return (
+    <div>
+      <Link to="/properties" className="back-link">
+        ← Back to properties
+      </Link>
+      <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="page-title">{property.title}</h1>
+            <span className={property.isAvailable ? 'badge-available' : 'badge-unavailable'}>
+              {property.isAvailable ? 'Available' : 'Unavailable'}
+            </span>
+          </div>
+          <p className="mt-2 text-2xl font-semibold text-teal-800">
+            {money.format(property.price)}
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Link to={`/properties/${id}/edit`} className="btn-secondary">
+            Edit
+          </Link>
+          <button className="btn-danger" onClick={() => setDialog(true)}>
+            Delete
+          </button>
+        </div>
+      </div>
+      <div className="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+        {image ? (
+          <img src={image} alt={property.title} className="aspect-[16/7] w-full object-cover" />
+        ) : (
+          <div className="grid aspect-[16/7] place-items-center bg-slate-100 text-slate-400">
+            No image available
+          </div>
+        )}
+        <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[1fr_320px]">
+          <div>
+            <h2 className="form-section-title">About this property</h2>
+            <p className="mt-3 whitespace-pre-wrap leading-7 text-slate-600">
+              {property.description}
+            </p>
+          </div>
+          <dl className="grid grid-cols-2 gap-x-4 gap-y-5 rounded-xl bg-slate-50 p-5 text-sm">
+            <div className="col-span-2">
+              <dt className="text-slate-500">Property type</dt>
+              <dd className="mt-1 font-semibold text-slate-900">
+                {propertyTypeLabel(property.propertyType)}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-slate-500">Rooms</dt>
+              <dd className="mt-1 font-semibold text-slate-900">{property.numberOfRooms}</dd>
+            </div>
+            <div>
+              <dt className="text-slate-500">Available</dt>
+              <dd className="mt-1 font-semibold text-slate-900">
+                {new Date(property.availableDate).toLocaleDateString()}
+              </dd>
+            </div>
+            <div className="col-span-2">
+              <dt className="text-slate-500">Inspection</dt>
+              <dd className="mt-1 font-semibold text-slate-900">
+                {property.inspectionAt
+                  ? new Date(property.inspectionAt).toLocaleString()
+                  : 'Not scheduled'}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-slate-500">Latitude</dt>
+              <dd className="mt-1 font-semibold text-slate-900">{property.latitude}</dd>
+            </div>
+            <div>
+              <dt className="text-slate-500">Longitude</dt>
+              <dd className="mt-1 font-semibold text-slate-900">{property.longitude}</dd>
+            </div>
+            <div className="col-span-2 border-t border-slate-200 pt-5">
+              <dt className="text-slate-500">Property ID</dt>
+              <dd className="mt-1 break-all font-mono text-xs font-semibold text-slate-900">
+                {property.id}
+              </dd>
+            </div>
+            <div className="col-span-2">
+              <dt className="text-slate-500">Created</dt>
+              <dd className="mt-1 font-semibold text-slate-900">
+                {new Date(property.createdAt).toLocaleString()}
+              </dd>
+            </div>
+            <div className="col-span-2">
+              <dt className="text-slate-500">Last updated</dt>
+              <dd className="mt-1 font-semibold text-slate-900">
+                {new Date(property.updatedAt).toLocaleString()}
+              </dd>
+            </div>
+            <div className="col-span-2">
+              <dt className="text-slate-500">Image</dt>
+              <dd className="mt-1 break-all font-semibold text-slate-900">
+                {property.imageUrl || 'Not uploaded'}
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+      {dialog && (
+        <DeletePropertyDialog
+          title={property.title}
+          isDeleting={deleting}
+          onCancel={() => setDialog(false)}
+          onConfirm={() => void remove()}
+        />
+      )}
+    </div>
+  )
 }
