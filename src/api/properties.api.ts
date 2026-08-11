@@ -16,13 +16,14 @@ export interface PropertyFilters {
 
 function toFormData(values: PropertyFormValues) {
   const data = new FormData()
+  const inspectionAt =
+    values.inspectionDate && values.inspectionTime
+      ? new Date(`${values.inspectionDate}T${values.inspectionTime}`).toISOString()
+      : ''
   data.append('title', values.title.trim())
   data.append('description', values.description.trim())
   data.append('availableDate', values.availableDate)
-  data.append(
-    'inspectionAt',
-    values.inspectionAt ? new Date(values.inspectionAt).toISOString() : '',
-  )
+  data.append('inspectionAt', inspectionAt)
   data.append('isAvailable', String(values.isAvailable))
   data.append('latitude', values.latitude)
   data.append('longitude', values.longitude)

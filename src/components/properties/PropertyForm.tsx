@@ -14,7 +14,8 @@ const empty: PropertyFormValues = {
   title: '',
   description: '',
   availableDate: '',
-  inspectionAt: '',
+  inspectionDate: '',
+  inspectionTime: '',
   isAvailable: true,
   latitude: '',
   longitude: '',
@@ -32,7 +33,6 @@ export default function PropertyForm({
   serverError,
   onSubmit,
 }: Props) {
-  
   const [values, setValues] = useState(initialValues)
   const [errors, setErrors] = useState<PropertyFieldErrors>({})
   const [preview, setPreview] = useState<string | null>(null)
@@ -125,14 +125,25 @@ export default function PropertyForm({
             {errors.availableDate && <span className="form-error">{errors.availableDate}</span>}
           </label>
           <label className="form-label">
-            Inspection date & time <span className="font-normal text-slate-400">(optional)</span>
+            Inspection date <span className="font-normal text-slate-400">(optional)</span>
             <input
-              type="datetime-local"
-              className={inputClass('inspectionAt')}
-              value={values.inspectionAt}
-              onChange={(e) => set('inspectionAt', e.target.value)}
+              type="date"
+              className={inputClass('inspectionDate')}
+              value={values.inspectionDate}
+              onChange={(e) => set('inspectionDate', e.target.value)}
             />
-            {errors.inspectionAt && <span className="form-error">{errors.inspectionAt}</span>}
+            {errors.inspectionDate && <span className="form-error">{errors.inspectionDate}</span>}
+          </label>
+          <label className="form-label">
+            Inspection time <span className="font-normal text-slate-400">(optional)</span>
+            <input
+              type="time"
+              step="60"
+              className={inputClass('inspectionTime')}
+              value={values.inspectionTime}
+              onChange={(e) => set('inspectionTime', e.target.value)}
+            />
+            {errors.inspectionTime && <span className="form-error">{errors.inspectionTime}</span>}
           </label>
           <label className="form-label">
             Price (PHP)

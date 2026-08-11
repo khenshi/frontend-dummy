@@ -5,7 +5,11 @@ import { getApiError } from '../api/client'
 import PropertyForm from '../components/properties/PropertyForm'
 import type { Property, PropertyFormValues } from '../types/property'
 
-const localDateTime = (value: string | null) => value ? new Date(value).toLocaleString('sv-SE').slice(0, 16).replace(' ', 'T') : ''
+const localInspection = (value: string | null) => {
+  if (!value) return { date: '', time: '' }
+  const [date, time] = new Date(value).toLocaleString('sv-SE').split(' ')
+  return { date, time: time.slice(0, 5) }
+}
 
 export default function EditPropertyPage() {
   const { id = '' } = useParams()
@@ -47,11 +51,13 @@ export default function EditPropertyPage() {
       </div>
     )
 
+  const inspection = localInspection(property.inspectionAt)
   const values: PropertyFormValues = {
     title: property.title,
     description: property.description,
     availableDate: property.availableDate.slice(0, 10),
-    inspectionAt: localDateTime(property.inspectionAt),
+    inspectionDate: inspection.date,
+    inspectionTime: inspection.time,
     isAvailable: property.isAvailable,
     latitude: String(property.latitude),
     longitude: String(property.longitude),
@@ -60,13 +66,13 @@ export default function EditPropertyPage() {
     propertyType: property.propertyType,
     image: null,
   }
-  
+
   return (
     <div>
       <Link to={`/properties/${id}`} className="back-link">
         ← Back to property
       </Link>
-      <div className="mt-5">                                               
+      <div className="mt-5">
         <h1 className="page-title">Edit {property.title}</h1>
       </div>
       <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">

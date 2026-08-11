@@ -23,7 +23,8 @@ export interface PropertyFormValues {
   title: string
   description: string
   availableDate: string
-  inspectionAt: string
+  inspectionDate: string
+  inspectionTime: string
   isAvailable: boolean
   latitude: string
   longitude: string
